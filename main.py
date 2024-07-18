@@ -14,7 +14,12 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 
+# Load environment variables from .env file
+load_dotenv()
 
+# Access the variables
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 def example_function(argument):
     return f"Received argument: {argument}"
