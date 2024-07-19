@@ -2,33 +2,7 @@
 
 from transcript_loader import TranscriptLoader
 from model_manager import ModelManager
-from thematic_analysis import ThematicAnalysis
-
-
-def load_transcript(file_path: str) -> str:
-    """Load the transcript data from the PDF file."""
-    transcript_loader = TranscriptLoader(file_path)
-    return transcript_loader.load_text_from_pdf()
-
-
-def perform_analysis(data: str, rqs: str, model_choice: str, method: str):
-    """Perform thematic analysis using the specified model and method."""
-    model_manager = ModelManager(model_choice=model_choice)
-    thematic_analysis = ThematicAnalysis(model_manager)
-
-    # Depending on the method, you might pass examples or chain templates
-    if method == 'few-shot':
-        examples = "Example 1: Theme: X, Definition: ... Example 2: Theme: Y, Definition: ..."
-        results = thematic_analysis.perform_analysis(data, rqs, method='few-shot', examples=examples)
-    elif method == 'chain-of-thought':
-        chain_template = """You are a researcher. Based on the research questions: {rqs} and data: {data}, 
-        generate themes with definitions and supporting quotes."""
-        results = thematic_analysis.perform_analysis(data, rqs, method='chain-of-thought', chain_template=chain_template)
-    else:
-        results = thematic_analysis.perform_analysis(data, rqs, method='zero-shot')
-
-    return results
-
+from prompting_methods import ZeroShotPrompt, FewShotPrompt, ChainOfThoughtPrompt
 
 def main():
     # Define file path and research questions
@@ -40,19 +14,38 @@ def main():
     understanding of patients with diabetes?"""
 
     # Choose model and method for testing
-    model_choice = 'gpt-4o-2024-05-13'  # Change to 'gemini-1.5-flash' if needed
+    model_choice = 'gemini-1.5-flash'  # Change if needed
     method = 'zero-shot'  # Choose from 'zero-shot', 'few-shot', or 'chain-of-thought'
 
+    # Initialize ModelManager
+    connect = ModelManager(model_choice=model_choice)
+
     # Load data
-    data = load_transcript(file_path)
+    pdf = TranscriptLoader(file_path)
+    data = pdf.load_text_from_pdf()
 
     # Perform analysis
-    results = perform_analysis(data, rqs, model_choice, method)
+    if method == 'zero-shot':
+        prompt = ZeroShotPrompt(connect.llm)
+        results = prompt.generate_response(data, rqs)
+    elif method == 'few-shot':
+        examples = "Example 1: Theme: X, Definition: ... Example 2: Theme: Y, Definition: ..."
+        prompt = FewShotPrompt(connect.llm)
+        results = prompt.generate_response(data, rqs, examples)
+    elif method == 'chain-of-thought':
+        chain_template = """You are a researcher. Based on the research questions: {rqs} 
+        and data: {data}, generate themes with definitions and supporting quotes."""
+        prompt = ChainOfThoughtPrompt(connect.llm)
+        results = prompt.generate_response(data, rqs, chain_template)
+    else:
+        raise ValueError(f"Unknown method: {method}")
 
     # Print results
-    print(f"Results using {model_choice} with {method} method:")
-    print(results)
-
+    if results:
+        print(f"Results using {model_choice} with {method} method:")
+        print(results)
+    else:
+        print("No results were generated.")
 
 if __name__ == "__main__":
     main()

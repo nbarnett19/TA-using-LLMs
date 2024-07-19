@@ -8,6 +8,7 @@ import langchain_community
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 
+
 class ModelManager:
     def __init__(self, model_choice='gemini-1.5-flash', text=None):
         load_dotenv()
@@ -25,11 +26,11 @@ class ModelManager:
         else:
             raise ValueError(f"Unknown model choice: {model_choice}")
 
-
-if __name__ == "__main__":
-    model_choice = 'gemini-1.5-flash' or 'gpt-4o-2024-05-13'
-    model = Model(model_choice=model_choice, text="Hello, world!")
-    print(model.llm)  # This will print the LLM instance based on the choice
+#
+# if __name__ == "__main__":
+#     model_choice = 'gemini-1.5-flash' or 'gpt-4o-2024-05-13'
+#     model = ModelManager(model_choice=model_choice, text="Hello, world!")
+#     print(model.llm)  # This will print the LLM instance based on the choice
 
 
 
