@@ -18,6 +18,7 @@ from langchain.prompts import PromptTemplate
 class Model:
     def __init__(self, model_choice='gemini-1.5-flash', text=None):
         load_dotenv()
+        self.model_choice = model_choice
         self.text = text
         self.llm = self._initialize_model(model_choice)
 
