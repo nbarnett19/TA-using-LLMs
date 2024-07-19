@@ -8,7 +8,7 @@ import langchain_community
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 
-class Model:
+class ModelManager:
     def __init__(self, model_choice='gemini-1.5-flash', text=None):
         load_dotenv()
         self.model_choice = model_choice

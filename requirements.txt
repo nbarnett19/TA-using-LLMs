@@ -6,3 +6,4 @@ langchain_community==0.2.7
 langchain_openai==0.1.17
 langchain_google_genai==1.0.7
 OpenAI==1.35.14
+pypdf2~=3.0.1
