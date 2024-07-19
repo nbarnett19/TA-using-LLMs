@@ -3,17 +3,11 @@
 import sys
 import os
 from dotenv import load_dotenv
-import argparse
-import getpass
-
-import pypdf
 import langchain
 import langchain_core
 import langchain_community
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
-from langchain.prompts import PromptTemplate
-
 
 class Model:
     def __init__(self, model_choice='gemini-1.5-flash', text=None):
