@@ -11,16 +11,15 @@ class TranscriptLoader:
     def load_text_from_pdf(self) -> str:
         """Load text from a PDF file using PyPDFLoader."""
         loader = PyPDFLoader(self.file_path)
-        documents = loader.load()  # Load the PDF into a list of Document objects
+        data = loader.load()  # Load the PDF into a list of Document objects
 
         # Initialize an empty string to hold the full text
         full_text = ""
 
         # Extract text from each document
-        for doc in documents:
+        for doc in data:
             # Assuming `doc` has a `page_content` attribute which contains the text
-            full_text += doc.page_content  # Adjust this if `page_content` is not the correct attribute
-
+            full_text += doc.page_content
         return full_text
 
 
