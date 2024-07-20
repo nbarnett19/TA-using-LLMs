@@ -1,8 +1,7 @@
 # main.py
 
-import langchain
-import langchain_core
-import langchain_community
+import os
+from dotenv import load_dotenv
 from src import ModelManager, ZeroShotPrompt, TranscriptLoader
 
 # Initialize the ModelManager

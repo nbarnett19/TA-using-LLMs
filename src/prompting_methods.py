@@ -31,7 +31,6 @@ class ZeroShotPrompt:
         generate themes with definitions and supporting quotes from the text: {data}."""
         zs_prompt = PromptTemplate.from_template(zs_template)
         chain = zs_prompt | self.llm
-        results = chain.invoke({"rqs": rqs, "data": data})
 
         try:
             results = chain.invoke({"rqs": rqs, "data": data})
