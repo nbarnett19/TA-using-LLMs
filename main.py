@@ -2,14 +2,19 @@
 
 import os
 from dotenv import load_dotenv
-from src import ModelManager, ZeroShotPrompt, TranscriptLoader
+from src import ModelManager, ThematicAnalysis, TranscriptLoader, CodeExcerpt, ZSThemes
 
 # Initialize the ModelManager
 model_manager = ModelManager(model_choice='gemini-1.5-flash')
 
 # Load the transcript data from the PDF
 transcript_loader = TranscriptLoader("data/Alle_Transkripte_EN.pdf")
-data = transcript_loader.load_text_from_pdf()
+text = transcript_loader.load_text_from_pdf()
+
+# Split the text into chunks
+chunks = transcript_loader.split_text_into_chunks(chunk_size=10000, chunk_overlap=1000)
+print("Number of chunks:", len(chunks))
+
 
 # Define the research questions
 rqs = """Explore and describe experiences of internal medicine doctors after wearing a
@@ -18,13 +23,14 @@ glucose sensor with focus on two research questions:
 2. How can self-tracking with a glucose sensor improve residents’ awareness, appreciation, and
 understanding of patients with diabetes?"""
 
-# Initialize the ZeroShotPrompt with the chosen language model
-zs_prompt = ZeroShotPrompt(llm=model_manager.llm)
+# Initialize the thematic analysis with the chosen language model
+prompt = ThematicAnalysis(llm=model_manager.llm, chunks=chunks, rqs=rqs)
 
-# Generate a response
-try:
-    response = zs_prompt.generate_response(data=data, rqs=rqs)
-    print(response)
-except Exception as e:
-    print(f"Failed to generate response: {e}")
+# Generate data summary
+summary = prompt.generate_summary()
 
+# Generate Codes
+df = prompt.generate_codes(filename="test_results/code_test.json")
+
+# Zero-shot prompt themes
+zs_results = prompt.zs_prompt(df, filename="test_results/zero_shot_themes_test.json")
