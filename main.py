@@ -2,7 +2,7 @@
 
 import os
 from dotenv import load_dotenv
-from src import ModelManager, ThematicAnalysis, TranscriptLoader, CodeExcerpt, ZSThemes
+from src import ModelManager, ThematicAnalysis, TranscriptLoader, HierarchicalDataFrame
 
 # Initialize the ModelManager
 model_manager = ModelManager(model_choice='gemini-1.5-flash')
@@ -30,7 +30,11 @@ prompt = ThematicAnalysis(llm=model_manager.llm, chunks=chunks, rqs=rqs)
 summary = prompt.generate_summary()
 
 # Generate Codes
-df = prompt.generate_codes(filename="test_results/code_test.json")
+df = prompt.generate_codes(filename="test_results/generate_code_test2.json")
 
 # Zero-shot prompt themes
-zs_results = prompt.zs_prompt(df, filename="test_results/zero_shot_themes_test.json")
+zs_results = prompt.zs_prompt(df, filename="test_results/zs_themes_test2.json")
+
+# Format themes into hierarchical dataframe
+HierarchicalDataFrame(zs_results).get_hierarchical_df(filename="test_results/zs_themes_test2", file_format="hdf")
+HierarchicalDataFrame(zs_results).get_hierarchical_df(filename="test_results/zs_themes_test2", file_format="csv")

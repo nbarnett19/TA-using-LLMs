@@ -143,14 +143,16 @@ class ThematicAnalysis:
 
         return df
 
-    def zs_prompt(self, codes_df, max_themes=10, filename=None):
+    def zs_prompt(self, codes_df, max_themes=10, max_subthemes=3, max_quotes=3, filename=None):
         """
         Generates themes with definitions and supporting quotes from the text.
 
         Args:
             codes_df (DataFrame): DataFrame containing the generated codes.
             max_themes (int): Maximum number of themes to generate.
-            filename (str): Optional filename to save the generated themes.
+            max_subthemes (int): Maximum number of subthemes per theme.
+            max_quotes (int): Maximum number of supporting quotes per subtheme.
+            filename (str): Optional filename to save the generated codes.
 
         Returns:
             The generated response from the language model.
@@ -158,13 +160,10 @@ class ThematicAnalysis:
         zs_template = """You are a qualitative researcher. \
         The aim of your study is to answer the following research questions: {rqs} \
         Based on your research questions, collate the codes into {max_themes} themes with theme \
-        definitions, sub-themes, sub-theme definitions and supporting quotes
+        definitions, {max_subthemes} sub-themes par themes with sub-theme definitions \
+        and {max_quotes} supporting quotes per sub-theme. \
         <format_instructions>
         {format_instructions}
-        Where theme1 and theme2 are the themes you generated and definition1 and definition2 \
-        are the definitions of the themes. Sub-theme1 and sub-theme2 are the sub-themes of the theme. \
-        and sub-theme_definition1 and sub-theme_definition2 are the definitions of the sub-themes. \
-        Supporting_quote1 and supporting_quote2 are the supporting quotes for the theme.
         </format_instructions>
 
         <codes>
@@ -175,7 +174,7 @@ class ThematicAnalysis:
         {rqs}
         </question>
 
-        Thematic Analysis:"""""
+        Themes and Sub-themes:"""""
 
         # Convert the DataFrame to a list of dictionaries
         codes = codes_df.to_dict(orient='records')
@@ -187,46 +186,34 @@ class ThematicAnalysis:
 
         prompt = PromptTemplate(
             template=zs_template,
-            input_variables=["codes", "rqs", "format_instructions"],
+            input_variables=["codes", "rqs", "max_themes", "max_subthemes",
+                             "max_quotes", "format_instructions"],
             partial_variables={"format_instructions": format_instructions}
         )
-        chain = prompt | self.llm | parser
-
-        all_themes = []
-        for code in codes:
-            try:
-                # Generate codes for each chunk
-                themes = chain.invoke({
-                    "rqs": self.rqs,
-                    "codes": codes,
-                    "max_themes": max_themes
-                })
-
-                # Append the codes to the list
-                all_themes.append(themes)
-
-            except Exception as e:
-                print(f"Error occurred while processing code: {e}")
+        chain = prompt | model_manager.llm | parser
 
         try:
-            # Flatten the list of lists
-            flat_results = [item for sublist in all_themes for item in sublist]
-
-            # Convert the flattened list of dictionaries to a DataFrame
-            df = pd.DataFrame(flat_results)
+            # Generate themes and subthemes
+            results = chain.invoke({
+                "rqs": self.rqs,
+                "codes": codes,
+                "max_themes": max_themes,
+                "max_subthemes": max_subthemes,
+                "max_quotes": max_quotes
+            })
 
         except Exception as e:
-            print(f"Error occurred while converting JSON to DataFrame: {e}")
+            print(f"Error occurred while processing code: {e}")
 
         if filename is not None:
             try:
                 with open(filename, 'w') as f:
-                    json.dump(flat_results, f, indent=4)
+                    json.dump(results, f, indent=4)
 
                     print(f"Results successfully saved to {filename}")
 
             except Exception as e:
                 print(f"Error occurred while saving JSON data: {e}")
 
-        return df
+        return results
 
