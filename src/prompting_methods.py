@@ -149,6 +149,8 @@ class ThematicAnalysis:
 
         Args:
             codes_df (DataFrame): DataFrame containing the generated codes.
+            max_themes (int): Maximum number of themes to generate.
+            filename (str): Optional filename to save the generated themes.
 
         Returns:
             The generated response from the language model.
@@ -156,12 +158,12 @@ class ThematicAnalysis:
         zs_template = """You are a qualitative researcher. \
         The aim of your study is to answer the following research questions: {rqs} \
         Based on your research questions, collate the codes into {max_themes} themes with theme \
-        definitions, subthemes, subtheme definitions and supporting quotes
+        definitions, sub-themes, sub-theme definitions and supporting quotes
         <format_instructions>
         {format_instructions}
         Where theme1 and theme2 are the themes you generated and definition1 and definition2 \
-        are the definitions of the themes. Subtheme1 and subtheme2 are the subthemes of the theme. \
-        and subtheme_definition1 and subtheme_definition2 are the definitions of the subthemes. \
+        are the definitions of the themes. Sub-theme1 and sub-theme2 are the sub-themes of the theme. \
+        and sub-theme_definition1 and sub-theme_definition2 are the definitions of the sub-themes. \
         Supporting_quote1 and supporting_quote2 are the supporting quotes for the theme.
         </format_instructions>
 
