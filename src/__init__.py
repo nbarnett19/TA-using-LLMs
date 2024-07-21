@@ -3,5 +3,5 @@
 from .model_manager import ModelManager
 from .transcript_loader import TranscriptLoader
 from .rag_integration import RAGIntegration
-from .JSON_parser import CodeExcerpt, ZSThemes
+from .json_parser import CodeExcerpt, ZSThemes
 from prompting_methods import ThematicAnalysis

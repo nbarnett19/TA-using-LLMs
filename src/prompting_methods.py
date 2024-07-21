@@ -4,7 +4,6 @@ import json
 import pandas as pd
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
-from JSONparser import CodeExcerpt, ZSThemes
 
 
 class ThematicAnalysis:
@@ -144,7 +143,7 @@ class ThematicAnalysis:
 
         return df
 
-    def zs_prompt(self, codes_df, filename=None):
+    def zs_prompt(self, codes_df, max_themes=10, filename=None):
         """
         Generates themes with definitions and supporting quotes from the text.
 
@@ -156,7 +155,7 @@ class ThematicAnalysis:
         """
         zs_template = """You are a qualitative researcher. \
         The aim of your study is to answer the following research questions: {rqs} \
-        Based on your research questions, collate the codes into themes, theme \
+        Based on your research questions, collate the codes into {max_themes} themes with theme \
         definitions, subthemes, subtheme definitions and supporting quotes
         <format_instructions>
         {format_instructions}
@@ -198,6 +197,7 @@ class ThematicAnalysis:
                 themes = chain.invoke({
                     "rqs": self.rqs,
                     "codes": codes,
+                    "max_themes": max_themes
                 })
 
                 # Append the codes to the list
@@ -219,7 +219,7 @@ class ThematicAnalysis:
         if filename is not None:
             try:
                 with open(filename, 'w') as f:
-                    json.dump(results, f, indent=4)
+                    json.dump(flat_results, f, indent=4)
 
                     print(f"Results successfully saved to {filename}")
 
