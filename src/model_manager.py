@@ -95,10 +95,10 @@ class ModelManager:
         self.llm = self._initialize_model(self.model_choice, self.temperature, self.top_p)
 
 
-# Example Usage
-if __name__ == "__main__":
-    model_manager = ModelManager(model_choice='gemini-1.5-flash')
-    print(model_manager.llm)  # This will print the initialized model instance
+# # Example Usage
+# if __name__ == "__main__":
+#     model_manager = ModelManager(model_choice='gemini-1.5-flash')
+#     print(model_manager.llm)  # This will print the initialized model instance
 
 
 
