@@ -1,113 +1,72 @@
 # count_duplicates.py
 
-import nltk
-from nltk import ngrams as nltk_ngrams
-from typing import Optional, List
+from collections import Counter
+import re
 import json
 import pandas as pd
 
-nltk.download('punkt')
 
-class LLMTextDiversityAnalyzer:
-    def __init__(self, thematic_analysis):
+class CountDuplicates:
+    """
+    Initializes the CountDuplicates with a list of dictionaries.
+
+    Args:
+        list_of_dicts (List[Dict]): A list of dictionaries.
+        key (str): The key whose values will be checked for duplicates.
+    """
+    def __init__(self, list_of_dicts, key):
+        self.list_of_dicts = list_of_dicts
+        self.key = key
+
+    def count_duplicate_strings(self):
         """
-        Initializes the class and sets the thematic analysis instance.
-
-        Args:
-            thematic_analysis_instance: Instance of ThematicAnalysis to generate themes and codes.
-        """
-        self.thematic_analysis = thematic_analysis  # ThematicAnalysis instance
-
-    def run_thematic_analysis(self, runs=10, filename: Optional[str] = None):
-        """
-        Executes the thematic analysis by calling the zs_codes method.
-
-        Args:
-            runs (int): Number of times to run the thematic analysis.
-            filename: Optional filename to save the thematic analysis result.
+        Counts duplicate strings in a list of dictionaries and filters out those with only 1 occurrence.
 
         Returns:
-            The result of the thematic analysis.
+            dict: A dictionary with strings as keys and their counts as values (only if count > 1).
         """
-        codes = []
-        for i in range(runs):
-            try:
-                codes.append(self.thematic_analysis.generate_codes())
-                print(f"Thematic analysis {i+1} successfully run.")
-            except Exception as e:
-                print(f"Error running thematic analysis {i}: {e}")
-                raise
-        # Save results to file
-        if filename:
-            if filename.endswith('.json'):
-                with open(filename, 'w') as f:
-                    json.dump(codes, f, indent=4)
-                print(f"Results successfully saved to {filename}")
-        self.zs_code_results = codes
-        return codes
+        # Collect all strings from the specified key in each dictionary
+        strings = [d[self.key] for d in self.list_of_dicts if self.key in d]
 
-    def set_code_data(self):
+        # Use Counter to count occurrences and filter out those with count 1
+        counted_strings = Counter(strings)
+
+        # Filter out strings with a count of 1
+        print(f"Total sum of counts: {counted_strings.total()}")
+        return counted_strings
+
+    def filter_dict(self):
         """
-        Extracts relevant theme data (theme, subthemes, codes) from the zs_control_gemini output.
+        Filters out strings with a count of 1.
+
+        Returns:
+            dict: A dictionary with strings as keys and their counts as values (only if count > 1).
         """
-        if not hasattr(self, 'zs_code_results'):
-            raise ValueError("Thematic analysis has not been run yet. Run run_thematic_analysis() first.")
+        # Use Counter to count occurrences and filter out those with count 1
+        counted_strings = self.count_duplicate_strings()
 
-        # t5p5[0][0]['code']
-        all_runs = []
-        for result in self.zs_code_results:
-          all_codes = ""
-          # Access the elements within the nested structure using their appropriate index
-          for i in result:
-            all_codes += i['code'] + " "
-          all_runs.append(all_codes)
-        self.all_runs = all_runs
-        return all_runs
+        filtered_dict = {string: count for string, count in counted_strings.items() if count > 1}
 
-    def count_tokens(self):
-        """Counts the number of tokens in a text."""
-        all_tokens = []
-        num_of_tokens = []
-        for i, run in enumerate(self.all_runs):
-            tokens = nltk.word_tokenize(run)
-            all_tokens.append(tokens)
-            num_of_tokens.append(len(tokens))
-            print(f"Run {i + 1} token count: {len(tokens)}")
-        self.all_tokens = all_tokens
-        self.num_of_tokens = num_of_tokens
-        return all_tokens, num_of_tokens
+        # Print total sum of filtered counts
+        print(f"Total sum of filtered counts: {sum(filtered_dict.values())}")
 
-    def count_unique_ngrams(self, n=2):
-        """Counts the unique n-grams (bi-grams, tri-grams, etc.) in a text."""
-        ngrams = []
-        unique_ngram_count = []
-        for i, tokens in enumerate(self.all_tokens):
-            n_grams = list(nltk_ngrams(tokens, n))
-            ngrams.append(n_grams)
-            unique_ngrams = set(n_grams)
-            unique_ngram_count.append(len(unique_ngrams))
-            print(f"Unique {n}-grams in run {i + 1}: {len(unique_ngrams)}")
-        if n == 2:
-            self.bigrams = ngrams
-            self.unique_bigram_count = unique_ngram_count
-        elif n == 3:
-            self.trigrams = ngrams
-            self.unique_trigram_count = unique_ngram_count
-        else:
-            self.ngrams = ngrams
-            self.unique_ngram_count = unique_ngram_count
-        return ngrams, unique_ngram_count
+        # Filter out strings with a count of 1
+        return filtered_dict
 
-    def display_results(self):
-        """Displays diversity metrics."""
-        df = pd.DataFrame({
-            "Tokens": self.all_tokens,
-            "Token Count": self.num_of_tokens,
-            "Bigrams": self.bigrams,
-            "Unique Bigrams": self.unique_bigram_count,
-            "Trigrams": self.trigrams,
-            "Unique Trigrams": self.unique_trigram_count
-        })
+    def top_duplicates(self, top_n = None):
+        """
+        Return a list of the n most common elements and their counts from the
+        most common to the least. If n is omitted or None, most_common() returns
+        all elements in the counter. Elements with equal counts will be ordered
+        in the order first encountered:
 
-        print(df.describe())
-        return df
+        Args:
+            top_n (int): The number of most common elements to return.
+
+        Returns:
+            list: A list of the n most common elements and their counts.
+        """
+
+        counted_strings = self.count_duplicate_strings()
+        return counted_strings.most_common(top_n)
+

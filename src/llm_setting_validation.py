@@ -8,13 +8,14 @@ import pandas as pd
 
 nltk.download('punkt')
 
+
 class LLMTextDiversityAnalyzer:
     def __init__(self, thematic_analysis):
         """
         Initializes the class and sets the thematic analysis instance.
 
         Args:
-            thematic_analysis_instance: Instance of ThematicAnalysis to generate themes and codes.
+            thematic_analysis: Instance of ThematicAnalysis to generate themes and codes.
         """
         self.thematic_analysis = thematic_analysis  # ThematicAnalysis instance
 

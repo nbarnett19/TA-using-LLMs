@@ -2,10 +2,12 @@
 
 import os
 from dotenv import load_dotenv
-from src import ModelManager, ThematicAnalysis, TranscriptLoader, HierarchicalDataFrame
+from src import ModelManager, FocusGroup, CodeExcerpt, Themes, ZSControl, FolderLoader, ScannedPDFLoader, \
+    ThematicAnalysis, GenerateCodes, GenerateThemes, QuoteMatcher, CountDuplicates, LLMTextDiversityAnalyzer, \
+    QA_CoupleGenerator, ChromaVectorStoreManager, RAGAsEvaluation
 
 # Initialize the ModelManager
-model_manager = ModelManager(model_choice='gemini-1.5-flash')
+model_manager = ModelManager(model_choice='gemini-1.5-pro', temperature=0.5, top_p=0.5)
 
 # Load the transcript data from the PDF
 transcript_loader = TranscriptLoader("data/Alle_Transkripte_EN.pdf")
