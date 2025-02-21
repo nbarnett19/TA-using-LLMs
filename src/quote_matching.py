@@ -1,92 +1,116 @@
 # quote_matching.py
+
 import pandas as pd
 from fuzzywuzzy import fuzz
 from multiprocessing import Pool
-from typing import List, Optional, Tuple
-
+from typing import List, Dict, Any, Tuple
 
 class QuoteMatcher:
-    def __init__(self, text: List[str], df: pd.DataFrame):
+    def __init__(self, docs, chunks, json_codes_list=None, themes_list=None):
         """
-        Initializes the QuoteMatcher with the text and DataFrame.
+        Initializes the QuoteMatcher with the JSON list and JSON codes list.
 
         Args:
-            text (str): The text to match quotes against.
-            df (pd.DataFrame): The DataFrame containing the quotes.
+            docs (List[Dict[str, Any]]):The list of documents to analyze.
+            chunks (List[Dict[str, Any]]): The list of text chunks to analyze.
+            json_codes_list (List[Dict[str, Any]]): The JSON codes list containing the quotes for matching.
+            themes_list (List[Dict[str, Any]]): The JSON themes list containing the quotes for matching.
         """
-        self.text = text.replace('\n', ' ')  # Remove newline characters
-        self.df = df
+        self.docs = docs
+        self.chunks = chunks
+        self.json_codes_list = json_codes_list
+        self.themes_list = themes_list
 
-    def _match_quote(self, args: Tuple[str, str, int, int]) -> Optional[Tuple[str, str, int, int]]:
+    def matched_theme_quotes(self, threshold=80) -> List[Dict]:
         """
-        Helper function to find the best match for a single quote.
+        Finds matched quotes from the list of JSON dictionaries against the content in docs.
 
         Args:
-            args (Tuple[str, str, int, int]): Tuple containing text, quote, index, and threshold.
-
-        Returns:
-            Optional[Tuple[str, str, int, int]]: Matched information or None.
-        """
-        text, quote, index, threshold = args
-        ratio = fuzz.partial_ratio(text, quote)
-        if ratio > threshold:
-            return (text, quote, index, ratio)
-        return None
-
-    def quote_matches(self, column: str, threshold: int = 80, filename: Optional[str] = None, use_parallel: bool = False) -> pd.DataFrame:
-        """
-        Finds fuzzy matches between the given text and quotes in the specified column.
-
-        Args:
-            column (str): The column name in the DataFrame to search.
             threshold (int): The similarity threshold for fuzzy matching.
-            filename (Optional[str]): Optional csv or hdf filename to save the matched quotes.
-            use_parallel (bool): Whether to use parallel processing.
 
         Returns:
-            pd.DataFrame: DataFrame containing matched quotes from the text, matching DataFrame quotes, and their indices.
+            List[Dict]: A list of dictionaries with unmatched quotes and their indices.
         """
-        if column not in self.df.columns:
-            raise ValueError(f"Column '{column}' not found in the DataFrame.")
+        quotes = []
 
-        if self.df.empty:
-            print("DataFrame is empty. No matches to find.")
-            return pd.DataFrame(columns=['Text', 'Matching DF Quote', 'DF Quote Index', 'Match Ratio'])
-
-        # Split text into sentences or quotes
-        text_quotes = self.text.split('. ')
-
-        matches = []
-
-        # Prepare the argument list for matching
-        args_list = [(text_quotes, row[column], index, threshold) for text in self.text for index, row in self.df.iterrows()]
-
-        if use_parallel:
-            with Pool() as pool:
-                results = [pool.apply_async(self._match_quote, (args,)) for args in args_list]
-                matches = [result.get() for result in results if result.get() is not None]
+        # Check if themes_list is a single dictionary, wrap it in a list
+        if isinstance(self.themes_list, dict):
+            themes = [self.themes_list]  # Single theme, wrap in list
         else:
-            for args in args_list:
-                match = self._match_quote(args)
-                if match is not None:
-                    matches.append(match)
+            themes = self.themes_list  # Multiple themes
 
-        print(f"Found {len(matches)} matches out of {len(self.df[column])}")
+        # Put quotes from themes_list in a list
+        for item in themes:
+            for quote in item["supporting_quotes"]:
+                quotes.append(quote)
 
-        # Create a DataFrame from matches
-        matched_df = pd.DataFrame(matches, columns=['Text', 'Matching DF Quote', 'DF Quote Index', 'Match Ratio'])
+        # Total quotes that need to be matched
+        print(f"Total number of quotes: {len(quotes)}")
 
-        # Save to file
-        if filename is not None:
-            try:
-                if filename.endswith('.csv'):
-                    matched_df.to_csv(filename, index=False)
-                elif filename.endswith('.h5'):
-                    matched_df.to_hdf(filename, key='df', mode='w')
-                else:
-                    raise ValueError("Filename must end with .csv or .h5")
-                print(f"Results successfully saved to {filename}")
-            except Exception as e:
-                print(f"Error occurred while saving DataFrame: {e}")
+        # Match quotes to chunks
+        results = []
+        for item in quotes:
+            highest_match = None
+            highest_ratio = 0
 
-        return matched_df
+            for chunk in self.chunks:
+                match_ratio = fuzz.partial_ratio(item, chunk.page_content)
+
+                if match_ratio > highest_ratio:
+                    highest_ratio = match_ratio
+                    highest_match = {
+                        "quote": item,
+                        "matched_chunk": chunk.page_content,
+                        "match_ratio": match_ratio,
+                        "chunk_id": chunk.metadata.get("source", "unknown")
+                    }
+
+                if match_ratio >= threshold:
+                    # If the match is above the threshold, add it and stop looking for better matches
+                    results.append(highest_match)
+                    break
+            else:
+                # If no match was found above the threshold, add the highest match
+                if highest_match:
+                    results.append(highest_match)
+
+        print(pd.json_normalize(results))
+
+        return results
+
+    def unmatched_code_excerpts(self, threshold=80):
+        """
+        Identifies excerpts that do not sufficiently match their corresponding chunk_analyzed fields.
+
+        Args:
+            threshold (int): The minimum similarity score required to consider a match (default is 50).
+
+        Returns:
+            list of dict: A list of dictionaries with unmatched excerpts, chunks, similarity scores, and their indices.
+        """
+        unmatched_results = []
+
+        for index, item in enumerate(self.json_codes_list):
+            excerpt = item.get("excerpt", "")
+            chunk_analyzed = item.get("chunk_analyzed", "")
+            score = fuzz.partial_ratio(chunk_analyzed, excerpt)
+
+            if score < threshold:
+                unmatched_results.append({
+                    "index": index,
+                    "code": item.get("code", ""),
+                    "excerpt": excerpt,
+                    "chunk_analyzed": chunk_analyzed,
+                    "match_ratio": score
+                })
+
+        if unmatched_results is None:
+          print("No unmatched results found.")
+        else:
+          print(f"{len(unmatched_results)} unmatched results found")
+
+        # Convert the list of dictionaries to a DataFrame
+        df = pd.DataFrame(unmatched_results)
+        print(df)
+
+        return unmatched_results
