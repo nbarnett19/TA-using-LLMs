@@ -9,7 +9,7 @@ from pypdf import PdfReader
 from langchain_core.document_loaders import BaseLoader
 from langchain_core.documents import Document
 from langchain.docstore.document import Document
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 from pdf2image import convert_from_path
 import cv2
 import numpy as np
@@ -75,11 +75,13 @@ class ScannedPDFLoader(BaseLoader):
         doc = Document(page_content=text, metadata={"source": "local"})
         return doc
 
-    def split_text(self, docs: Optional[List[Document]] = None, chunk_size=1000, chunk_overlap=500) -> List[Document]:
+    def split_text(self, docs=None, chunk_size=1000, chunk_overlap=500):
         """Split a list of Document objects into smaller chunks.
 
         Args:
             docs: A list of Document objects. If not provided, the load method is called to load documents.
+            chunk_size: The size of each chunk.
+            chunk_overlap: The overlap between chunks.
 
         Returns:
             A list of Document objects with smaller chunks.
@@ -97,7 +99,7 @@ class ScannedPDFLoader(BaseLoader):
         chunks = text_splitter.split_documents(docs)
         return chunks
 
-    def semantic_split_text(self, docs: Optional[List[Document]] = None) -> List[Document]:
+    def semantic_split_text(self, docs=None):
         """Split a list of Document objects into smaller chunks.
 
         Args:

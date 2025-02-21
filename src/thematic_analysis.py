@@ -62,7 +62,7 @@ class ThematicAnalysis:
             print(f"Error occurred while generating final summary: {e}")
             raise
 
-    def zs_control_gemini(self, filename: Optional[str] = None) -> Any:
+    def zs_control_gemini(self, filename=None) -> Any:
         """
         Generates themes with definitions, subthemes with definitions, codes and excerpts.
 
@@ -147,7 +147,7 @@ class ThematicAnalysis:
             print(f"Error occurred while processing: {e}")
             raise
 
-    def zs_control_gpt(self, filename: Optional[str] = None) -> Any:
+    def zs_control_gpt(self, filename=None) -> Any:
         """
         Generates themes with definitions, subthemes with definitions, codes, and excerpts.
 

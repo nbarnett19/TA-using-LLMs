@@ -1,42 +1,60 @@
 # main.py
-
+import argparse
 import os
 from dotenv import load_dotenv
 from src import ModelManager, FocusGroup, CodeExcerpt, Themes, ZSControl, FolderLoader, ScannedPDFLoader, \
     ThematicAnalysis, GenerateCodes, GenerateThemes, QuoteMatcher, CountDuplicates, LLMTextDiversityAnalyzer, \
     QA_CoupleGenerator, ChromaVectorStoreManager, RAGAsEvaluation
 
-# Initialize the ModelManager
-model_manager = ModelManager(model_choice='gemini-1.5-pro', temperature=0.5, top_p=0.5)
-
-# Load the transcript data from the PDF
-transcript_loader = TranscriptLoader("data/Alle_Transkripte_EN.pdf")
-text = transcript_loader.load_text_from_pdf()
-
-# Split the text into chunks
-chunks = transcript_loader.split_text_into_chunks(chunk_size=10000, chunk_overlap=1000)
-print("Number of chunks:", len(chunks))
+# Load environment variables if needed
+load_dotenv()
 
 
-# Define the research questions
-rqs = """Explore and describe experiences of internal medicine doctors after wearing a
-glucose sensor with focus on two research questions:
-1. How can self-tracking with a glucose sensor influence residents’ understanding of glucose metabolism?
-2. How can self-tracking with a glucose sensor improve residents’ awareness, appreciation, and
-understanding of patients with diabetes?"""
+def run_analysis(data_path, model_choice, temperature, top_p, rqs, filename):
+    """
+    Runs reflexive thematic analysis on the provided data using an LLM.
 
-# Initialize the thematic analysis with the chosen language model
-prompt = ThematicAnalysis(llm=model_manager.llm, chunks=chunks, rqs=rqs)
+    :param data_path: Path to the directory containing focus group transcripts
+    :param model_choice: Name of the LLM to use (e.g., 'gemini-1.5-pro')
+    :param temperature: Sampling temperature for LLM responses
+    :param top_p: Top-p nucleus sampling for LLM responses
+    :param rqs: Research questions of the thematic analysis
+    :param filename: Output json filename to save themes
+    """
 
-# Generate data summary
-summary = prompt.generate_summary()
+    print("Initializing ModelManager...")
+    model_manager = ModelManager(model_choice=model_choice, temperature=temperature, top_p=top_p)
 
-# Generate Codes
-df = prompt.generate_codes(filename="test_results/generate_code_test2.json")
+    print(f"Loading data from {data_path}...")
+    loader = FolderLoader(data_path)
+    docs = loader.load_txt()
 
-# Zero-shot prompt themes
-zs_results = prompt.zs_prompt(df, filename="test_results/zs_themes_test2.json")
+    print("Splitting text into chunks...")
+    chunks = loader.split_text(docs)
+    print(f"Number of chunks: {len(chunks)}")
 
-# Format themes into hierarchical dataframe
-HierarchicalDataFrame(zs_results).get_hierarchical_df(filename="test_results/zs_themes_test2", file_format="hdf")
-HierarchicalDataFrame(zs_results).get_hierarchical_df(filename="test_results/zs_themes_test2", file_format="csv")
+    print("Performing thematic analysis...")
+    prompt = ThematicAnalysis(llm=model_manager.llm, docs=docs, chunks=chunks, rqs=rqs)
+    results = prompt.zs_control_gemini(filename=filename)
+    pd.json_normalize(results)
+
+    print(f"Analysis complete! Themes saved to {output_filename}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Run reflexive thematic analysis using LLMs.")
+    parser.add_argument("--data", type=str, required=True, help="Path to the folder containing transcript files.")
+    parser.add_argument("--model", type=str, default="gemini-1.5-pro",
+                        help="LLM model to use (default: gemini-1.5-pro)")
+    parser.add_argument("--temperature", type=float, default=0.5, help="Temperature for LLM responses (default: 0.5)")
+    parser.add_argument("--top_p", type=float, default=0.5, help="Top-p sampling value (default: 0.5)")
+    parser.add_argument("--output", type=str, default="themes.json",
+                        help="Output file for generated themes (default: themes.json)")
+
+    args = parser.parse_args()
+    run_analysis(args.data, args.model, args.temperature, args.top_p, args.output)
+
+
+if __name__ == "__main__":
+    main()
+

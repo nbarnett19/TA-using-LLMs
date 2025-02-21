@@ -30,8 +30,8 @@ class GenerateThemes:
         sub_questions = generate_queries_transformation.invoke({"questions": questions})
         return sub_questions
 
-    def generate_themes(self, filename: Optional[str] = None, use_rag: bool = False,
-                        rag_query: Optional[str] = None, similarity_search_with_score: bool = False) -> Any:
+    def generate_themes(self, filename = None, use_rag: bool = False,
+                        rag_query = None, similarity_search_with_score: bool = False):
         """
         Generates themes with definitions and supporting quotes from the codes list.
 
@@ -160,8 +160,8 @@ class GenerateThemes:
             print(f"Error occurred while processing themes: {e}")
             raise
 
-    def cot_themes(self, filename: Optional[str] = None, use_rag: bool = False,
-                   rag_query: Optional[str] = None, similarity_search_with_score: bool = False) -> Any:
+    def cot_themes(self, filename = None, use_rag: bool = False,
+                   rag_query = None, similarity_search_with_score: bool = False):
         """
         Generates themes with definitions and supporting quotes from the codes list.
 
