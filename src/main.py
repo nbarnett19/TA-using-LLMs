@@ -1,8 +1,9 @@
 # main.py
 import argparse
+import pandas as pd
 import os
 from dotenv import load_dotenv
-from src import ModelManager, FocusGroup, CodeExcerpt, Themes, ZSControl, FolderLoader, ScannedPDFLoader, \
+from src.logic import ModelManager, FocusGroup, CodeExcerpt, Themes, ZSControl, FolderLoader, ScannedPDFLoader, \
     ThematicAnalysis, GenerateCodes, GenerateThemes, QuoteMatcher, CountDuplicates, LLMTextDiversityAnalyzer, \
     QA_CoupleGenerator, ChromaVectorStoreManager, RAGAsEvaluation
 
@@ -38,7 +39,7 @@ def run_analysis(data_path, model_choice, temperature, top_p, rqs, filename):
     results = prompt.zs_control_gemini(filename=filename)
     pd.json_normalize(results)
 
-    print(f"Analysis complete! Themes saved to {output_filename}")
+    print(f"Analysis complete! Themes saved to {filename}")
 
 
 def main():
