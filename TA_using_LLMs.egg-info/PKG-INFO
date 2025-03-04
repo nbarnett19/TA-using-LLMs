@@ -1,0 +1,12 @@
+Metadata-Version: 2.2
+Name: TA_using_LLMs
+Version: 0.0.2
+Summary: An application that performs qualitative thematic analysis using LLMs
+Author-email: nataliebarnett.ch@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+License-File: LICENSE
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: summary

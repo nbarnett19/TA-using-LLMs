@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+TA_using_LLMs/__init__.py
+TA_using_LLMs/logic.py
+TA_using_LLMs/main.py
+TA_using_LLMs.egg-info/PKG-INFO
+TA_using_LLMs.egg-info/SOURCES.txt
+TA_using_LLMs.egg-info/dependency_links.txt
+TA_using_LLMs.egg-info/top_level.txt
