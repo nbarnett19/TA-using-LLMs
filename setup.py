@@ -1,8 +1,9 @@
+#setup.py
 from setuptools import setup, find_packages
 
 setup(
-    name="TA-using-LLMs",
-    version="0.0.1",
+    name="TA_using_LLMs",
+    version="0.0.2",
     authors="Natalie Barnett",
     author_email="nataliebarnett.ch@gmail.com",
     description="An application that performs qualitative thematic analysis using LLMs",
@@ -12,6 +13,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    entrypoints={"console_scripts": ["TA_using_LLMs = src.main:main"]},
-    homepage="https://github.com/nbarnett19/TA-using-LLMs",
+    entrypoints={"console_scripts": ["TA_using_LLMs = src.TA_using_LLMs.main:main"]},
+    homepage="https://github.com/nbarnett19/Thematic_Analysis_using_LLMs",
 )

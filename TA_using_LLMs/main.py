@@ -1,11 +1,8 @@
-# main.py
+# TA_using_LLMs\main.py
 import argparse
 import pandas as pd
-import os
 from dotenv import load_dotenv
-from src.logic import ModelManager, FocusGroup, CodeExcerpt, Themes, ZSControl, FolderLoader, ScannedPDFLoader, \
-    ThematicAnalysis, GenerateCodes, GenerateThemes, QuoteMatcher, CountDuplicates, LLMTextDiversityAnalyzer, \
-    QA_CoupleGenerator, ChromaVectorStoreManager, RAGAsEvaluation
+from src.TA_using_LLMs.logic import ModelManager, FolderLoader, ThematicAnalysis
 
 # Load environment variables if needed
 load_dotenv()
@@ -44,16 +41,23 @@ def run_analysis(data_path, model_choice, temperature, top_p, rqs, filename):
 
 def main():
     parser = argparse.ArgumentParser(description="Run reflexive thematic analysis using LLMs.")
-    parser.add_argument("--data", type=str, required=True, help="Path to the folder containing transcript files.")
+    parser.add_argument("--data", type=str, default="data", help="Path to the folder containing transcript files.")
     parser.add_argument("--model", type=str, default="gemini-1.5-pro",
                         help="LLM model to use (default: gemini-1.5-pro)")
     parser.add_argument("--temperature", type=float, default=0.5, help="Temperature for LLM responses (default: 0.5)")
     parser.add_argument("--top_p", type=float, default=0.5, help="Top-p sampling value (default: 0.5)")
-    parser.add_argument("--output", type=str, default="themes.json",
+    parser.add_argument("--rqs", type=str, default="Explore and describe experiences of internal medicine doctors after "
+                                                   "wearing a glucose sensor with focus on two research questions: 1. How "
+                                                   "can self-tracking with a glucose sensor influence residents’ "
+                                                   "understanding of glucose metabolism? 2. How can self-tracking with a "
+                                                   "glucose sensor improve residents’ awareness, appreciation, and "
+                                                   "understanding of patients with diabetes?",
+                        help="Research questions for the thematic analysis (default: None)")
+    parser.add_argument("--filename", type=str, default="themes.json",
                         help="Output file for generated themes (default: themes.json)")
 
     args = parser.parse_args()
-    run_analysis(args.data, args.model, args.temperature, args.top_p, args.output)
+    run_analysis(args.data, args.model, args.temperature, args.top_p, args.rqs, args.filename)
 
 
 if __name__ == "__main__":

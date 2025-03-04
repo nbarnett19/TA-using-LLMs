@@ -1,3 +1,4 @@
+#TA_using_LLMs\logic.py
 import os
 import getpass
 import re
@@ -90,13 +91,11 @@ class ModelManager:
 
         # Ensure API keys are available
         self._ensure_api_keys()
-
         self.model_choice = model_choice
         self.temperature = temperature
         self.top_p = top_p
         self.llm = self._initialize_model(model_choice, temperature, top_p)
 
-    @staticmethod
     def _ensure_api_keys(self):
         """
         Prompts the user to enter API keys if they are not set in environment variables.
@@ -107,7 +106,6 @@ class ModelManager:
         if "OPENAI_API_KEY" not in os.environ:
             os.environ["OPENAI_API_KEY"] = getpass.getpass("Provide your OpenAI API Key: ")
 
-    @staticmethod
     def _initialize_model(self, model_choice, temperature, top_p):
         """
         Initializes the appropriate language model based on the model choice.
