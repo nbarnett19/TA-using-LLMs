@@ -12,7 +12,6 @@ description = "An application that performs qualitative thematic analysis using 
 readme = "README.md"
 requires-python = ">=3.7"
 license = { text="MIT" }
-homepage = "https://github.com/nbarnett19/Thematic_Analysis_using_LLMs"
 
 dependencies = [
     "chromadb==0.6.3",

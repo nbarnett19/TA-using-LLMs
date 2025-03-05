@@ -1,12 +1,49 @@
 Metadata-Version: 2.2
-Name: TA_using_LLMs
-Version: 0.0.3
+Name: TA-using-LLMs
+Version: 0.0.4
 Summary: An application that performs qualitative thematic analysis using LLMs
-Author-email: nataliebarnett.ch@gmail.com
-Classifier: Programming Language :: Python :: 3
-Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
+Author-email: Natalie Barnett <nataliebarnett.ch@gmail.com>
+License: MIT
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
 License-File: LICENSE
-Dynamic: author-email
-Dynamic: classifier
-Dynamic: summary
+Requires-Dist: chromadb==0.6.3
+Requires-Dist: datasets==3.3.2
+Requires-Dist: fuzzywuzzy==0.18.0
+Requires-Dist: huggingface-hub==0.28.1
+Requires-Dist: langchain==0.3.19
+Requires-Dist: langchain-chroma==0.2.2
+Requires-Dist: langchain-community==0.3.18
+Requires-Dist: langchain-core==0.3.37
+Requires-Dist: langchain-experimental==0.3.4
+Requires-Dist: langchain-google-genai==2.0.9
+Requires-Dist: langchain-openai==0.3.6
+Requires-Dist: langchain-text-splitters==0.3.6
+Requires-Dist: Levenshtein==0.26.1
+Requires-Dist: matplotlib
+Requires-Dist: multiprocess==0.70.16
+Requires-Dist: nltk==3.9.1
+Requires-Dist: numpy==1.26.4
+Requires-Dist: openai==1.61.1
+Requires-Dist: opencv-python==4.11.0.86
+Requires-Dist: pandas==2.2.2
+Requires-Dist: pdf2image==1.17.0
+Requires-Dist: pillow==11.1.0
+Requires-Dist: pydantic==2.10.6
+Requires-Dist: pydantic-settings==2.8.0
+Requires-Dist: pydantic_core==2.27.2
+Requires-Dist: pypdf==5.3.0
+Requires-Dist: pytesseract==0.3.13
+Requires-Dist: python-dotenv==1.0.1
+Requires-Dist: python-Levenshtein==0.26.1
+Requires-Dist: python-utils==3.9.1
+Requires-Dist: ragas==0.2.13
+Requires-Dist: scikit-learn==1.6.1
+Requires-Dist: seaborn==0.13.2
+Requires-Dist: sentence-transformers==3.4.1
+Requires-Dist: tensorflow==2.18.0
+Requires-Dist: tqdm==4.67.1
+Requires-Dist: transformers==4.48.3
+
+# Thematic Analysis using LLMs
+Exploring the capabilities of LLMs to perform qualitative thematic analysis.

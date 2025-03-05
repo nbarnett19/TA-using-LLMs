@@ -2,7 +2,7 @@
 import argparse
 import pandas as pd
 from dotenv import load_dotenv
-from src.TA_using_LLMs.logic import ModelManager, FolderLoader, ThematicAnalysis
+from TA_using_LLMs.logic import ModelManager, FolderLoader, ThematicAnalysis
 
 # Load environment variables if needed
 load_dotenv()
