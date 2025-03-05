@@ -1,5 +1,20 @@
 #setup.py
 from setuptools import setup, find_packages
+import subprocess
+import sys
+
+# Function to check if a system package is installed
+def check_system_dependency(command, package_name):
+    try:
+        subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    except subprocess.CalledProcessError:
+        sys.stderr.write(f"Warning: {package_name} is not installed. Please install it using:\n")
+        sys.stderr.write(f"  sudo apt install {package_name}\n")
+        sys.exit(1)
+
+# Check for required system packages
+check_system_dependency(["which", "tesseract"], "tesseract-ocr")
+check_system_dependency(["which", "pdftotext"], "poppler-utils")
 
 setup(
     name="TA_using_LLMs",

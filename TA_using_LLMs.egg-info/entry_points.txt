@@ -1,0 +1,2 @@
+[console_scripts]
+TA_using_LLMs = TA_using_LLMs.main:main
