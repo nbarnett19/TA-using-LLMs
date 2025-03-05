@@ -61,14 +61,21 @@ Clone the repository:
 2. Install dependencies (see above).
 3. Link to Colab Demo: https://colab.research.google.com/drive/19MrRwsY0dn3rtzGQUKtI1Ubyb0Swz0Rw?usp=sharing 
 
-## Repository Structure
+Repository Structure
 ```
-├── data/                # Focus group transcripts
-├── scripts/             # Python scripts for analysis
-├── models/              # LLM prompt templates & results
-├── results/             # Thematic analysis outputs
-├── requirements.txt     # Python dependencies
-├── README.md            # Project documentation
+├── RAG_files/                   # Data files used for retrieval-augmented generation
+├── ScannedPDFs_for_RAG/         # Additional scanned documents for retrieval
+├── TA_using_LLMs/               # Core thematic analysis module
+├── data/                        # Uploaded data files for analysis
+├── dist/                        # Distribution package files
+├── .github/                     # GitHub workflow and configuration files
+├── .gitignore                   # Ignore rules for Git
+├── LICENSE                      # Project license
+├── README.md                    # This README file
+├── TA_using_LLMs_DEMO.ipynb      # Jupyter Notebook for demonstration
+├── pyproject.toml                # Project metadata and build system requirements
+├── requirements.txt              # List of dependencies
+├── setup.py                      # Installation script
 ```
 
 ## Contributors
